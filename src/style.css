@@ -1,0 +1,539 @@
+@font-face {
+    font-family: Inter;
+    font-optical-sizing: auto;
+    src: url("/assets/Inter-VariableFont_opsz,wght.ttf");
+}
+
+:root {
+    font-family: Inter, Arial, Roboto, "SF Pro Text", "Martian Mono", sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    box-sizing: border-box;
+
+    color-scheme: light dark;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --background-main: #000;
+    --background-secondary: #222;
+    --foreground-main: #fff;
+    --foreground-secondary: #aaa;
+    --foreground-red: #f44336;
+    --foreground-orange: #ff9800;
+    --foreground-yellow: #ffeb3b;
+    --foreground-green: #4caf50;
+    --foreground-blue: #2196f3;
+    --foreground-indigo: #3f51b5;
+    --foreground-purple: #9c27b0;
+
+    --rainbow-gradient: linear-gradient(
+        55deg,
+        var(--foreground-red) 0%,
+        var(--foreground-red) 10%,
+        var(--foreground-orange) 16%,
+        var(--foreground-orange) 24%,
+        var(--foreground-yellow) 30%,
+        var(--foreground-yellow) 38%,
+        var(--foreground-green) 44%,
+        var(--foreground-green) 53%,
+        var(--foreground-blue) 59%,
+        var(--foreground-blue) 67%,
+        var(--foreground-indigo) 73%,
+        var(--foreground-indigo) 81%,
+        var(--foreground-purple) 87%,
+        var(--foreground-purple) 100%
+    );
+}
+
+* {
+    font-family: Inter, Arial, Roboto, "SF Pro Text", "Martian Mono", sans-serif;
+}
+
+*:focus,
+*:focus-within,
+*:focus-visible {
+    outline: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--foreground-main);
+    background-color: var(--background-main);
+}
+
+#app {
+    display: flex;
+    max-height: 800px;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    gap: 12px;
+}
+
+dialog {
+    background-color: var(--background-main);
+    border: 3px solid var(--foreground-main);
+    padding: 24px;
+    min-width: 400px;
+    z-index: 999;
+    box-sizing: border-box;
+}
+
+button {
+    display: inline-flex;
+    border-radius: 0;
+    border: 2px solid var(--foreground-main);
+    height: 36px;
+    padding: 8px 24px;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 16px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background-color: var(--background-main);
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--foreground-secondary);
+    outline-offset: 2px;
+}
+
+button:hover,
+button.selected {
+    color: var(--background-main);
+    background-color: var(--foreground-main);
+}
+
+button.green {
+    color: var(--foreground-green);
+    border-color: var(--foreground-green);
+}
+button.green:hover {
+    background-color: var(--foreground-green);
+    color: var(--background-main);
+}
+
+button.rainbow {
+    border-image: var(--rainbow-gradient) 2 2 2 2;
+    background-clip: text;
+    background: text border-box var(--rainbow-gradient);
+    color: transparent;
+}
+button.rainbow:hover {
+    background-clip: unset;
+    border-image: unset;
+    border-color: transparent;
+    background: border-box border-box var(--rainbow-gradient);
+    color: var(--background-main);
+}
+
+fieldset {
+    border: 2px solid var(--foreground-secondary);
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0 10px 12px 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+fieldset legend {
+    padding: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--foreground-secondary);
+}
+
+dialog footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+}
+
+h1 {
+    display: block;
+    font-size: 24px;
+    font-weight: 600;
+    padding: 0;
+    margin: 0 0 24px 0;
+    text-transform: uppercase;
+    color: var(--foreground-secondary);
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    min-width: 200px;
+    flex: 1 1 auto;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 3px;
+    background: var(--foreground-secondary);
+}
+input[type="range"]::-moz-range-track {
+    height: 3px;
+    background: var(--foreground-secondary);
+}
+input[type="range"]::-webkit-slider-thumb {
+    height: 16px;
+    background: var(--foreground-main);
+    width: 8px;
+    margin-top: -6px;
+    appearance: none;
+}
+input[type="range"]::-moz-range-thumb {
+    height: 16px;
+    background: var(--foreground-main);
+    width: 8px;
+    appearance: none;
+    border-radius: 0;
+    border: none;
+}
+
+input[type="range"]::-ms-track {
+    background: var(--foreground-main);
+}
+
+div.inlinefield {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: center;
+    width: 100%;
+}
+
+label {
+    font-size: 12px;
+    padding: 0 6px;
+    display: inline-block;
+    flex: 0 0 auto;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+h3 {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    text-transform: uppercase;
+    color: var(--foreground-main);
+}
+
+.textcenter {
+    text-align: center;
+}
+
+dialog::backdrop {
+    background-color: var(--background-main);
+    opacity: 0.75;
+}
+
+dialog.cover::backdrop {
+    background-color: var(--background-main);
+    opacity: 1;
+}
+
+/* Rollback dialog specific styles */
+.rollback-dialog {
+    min-width: 458px;
+}
+
+.rollback-dialog .board-container {
+    display: block;
+    width: calc(100% - 4px);
+    aspect-ratio: 1 / 1;
+    margin: 0 2px 12px 2px;
+    box-shadow: 0 0 0 2px var(--foreground-secondary);
+}
+
+.rollback-dialog .board-container > div {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.rollback-dialog .description {
+    text-align: left;
+    font-size: 14px;
+    margin: -16px 0 24px 0;
+    color: var(--foreground-main);
+}
+
+cg-board square.attacked:not(check):not(selected) {
+    box-shadow: 0 0 2px 0 rgba(255, 215, 0, 1);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 215, 0, 1) 0%,
+        rgba(231, 205, 0, 1) 25%,
+        rgba(169, 0, 0, 0) 89%,
+        rgba(158, 0, 0, 0) 100%
+    );
+}
+
+cg-board square.atrisk:not(check):not(selected) {
+    box-shadow: 0 0 2px 0 rgba(255, 130, 0, 1);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 130, 0, 1) 0%,
+        rgba(231, 115, 0, 1) 25%,
+        rgba(169, 0, 0, 0) 89%,
+        rgba(158, 0, 0, 0) 100%
+    );
+}
+
+#board {
+    display: flex;
+    flex: 0 0 auto;
+    aspect-ratio: 1/1;
+    max-height: 696px;
+    max-width: 696px;
+    min-width: 300px;
+    min-height: 300px;
+    width: 75%;
+    height: 75%;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 3px var(--foreground-main);
+    margin: 3px;
+}
+
+#moves {
+    flex: 1 1 auto;
+    max-height: 702px;
+    min-width: 200px;
+    padding: 12px;
+    width: auto;
+    display: flex;
+    margin-left: 12px;
+    max-width: 300px;
+    height: 100%;
+    box-sizing: border-box;
+    flex-direction: column;
+    overflow-y: scroll;
+    overflow-x: none;
+    box-shadow: 0 0 0 3px var(--foreground-main);
+    margin: 3px;
+}
+
+#moves h3 {
+    color: var(--foreground-secondary);
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+}
+
+#moves table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#moves table td,
+#moves table th {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 0 8px;
+    text-align: left;
+    border-left: 1px solid var(--foreground-secondary);
+}
+#moves table td.hasmove {
+    cursor: pointer;
+}
+#moves table td.hasmove:hover {
+    background-color: var(--foreground-main);
+    color: var(--background-main);
+}
+#moves table th {
+    font-weight: 800;
+    font-size: 10px;
+    padding: 3px 8px;
+    color: var(--foreground-secondary);
+}
+
+#moves table td:nth-child(1),
+#moves table thead th:nth-child(1) {
+    text-align: center;
+    width: 16px;
+    color: var(--foreground-secondary);
+    border-left: none;
+}
+#moves table tr {
+    background-color: var(--background-main);
+}
+#moves table tr:nth-child(even) {
+    background-color: var(--background-secondary);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-main: #fff;
+        --background-secondary: #ccc;
+        --foreground-main: #000;
+        --foreground-secondary: #555;
+
+        --foreground-red: #d32f2f;
+        --foreground-orange: #f57c00;
+        --foreground-yellow: #fbc02d;
+        --foreground-green: #2e7d32;
+        --foreground-blue: #1976d2;
+        --foreground-indigo: #303f9f;
+        --foreground-purple: #7b1fa2;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    #app {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    #board {
+        width: calc(100% - 6px);
+    }
+    #moves {
+        max-width: 696px;
+        width: calc(100% - 6px);
+        height: 300px;
+    }
+
+    @media (width > 750px) {
+        #board {
+            width: 696px;
+            height: 696px;
+        }
+    }
+
+    @media (width < 410px) {
+        dialog {
+            min-width: unset;
+            width: 100%;
+        }
+        dialog fieldset button {
+            width: 100%;
+        }
+    }
+}
+@media screen and (orientation: landscape) {
+    @media (width < 1100px) {
+        #moves {
+            max-width: 200px;
+        }
+    }
+    @media (width < 1100px), (height < 750px) {
+        #board {
+            max-height: 600px;
+            max-width: 600px;
+        }
+        #moves {
+            max-height: 600px;
+        }
+    }
+    @media (width < 850px), (height < 650px) {
+        #board {
+            max-height: 496px;
+            max-width: 496px;
+        }
+        #moves {
+            max-height: 496px;
+        }
+    }
+
+    @media (width < 750px), (height < 550px) {
+        #board {
+            max-height: 424px;
+            max-width: 424px;
+        }
+        #moves {
+            max-height: 424px;
+        }
+    }
+
+    @media (width < 650px), (height < 450px) {
+        #board {
+            max-height: 376px;
+            max-width: 376px;
+        }
+        #moves {
+            max-height: 376px;
+        }
+    }
+
+    @media (width < 600px), (height < 390px) {
+        #board {
+            max-height: 304px;
+            max-width: 304px;
+        }
+        #moves {
+            max-height: 304px;
+        }
+    }
+
+    @media (width < 536px), (height < 310px) {
+        body {
+            overflow: scroll;
+            width: auto;
+            height: auto;
+        }
+        #app {
+            overflow: scroll;
+            min-width: 536px;
+            min-height: 310px;
+        }
+        #board {
+            max-height: 300px;
+            max-width: 300px;
+        }
+        #moves {
+            max-height: 300px;
+            max-width: 200px;
+        }
+    }
+}
+
+/* Make board responsive in rollback dialog */
+@media (max-width: 500px), (max-height: 630px) {
+    .rollback-dialog {
+        width: 362px;
+        min-width: 362px;
+    }
+}
+
+@media (max-width: 375px), (max-height: 535px) {
+    .rollback-dialog {
+        width: 338px;
+        min-width: 338px;
+    }
+}
