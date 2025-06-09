@@ -32,18 +32,18 @@ export default defineConfig({
         splitVendorChunkPlugin(),
         viteStaticCopy({
             targets: [
-                {
-                    src: "node_modules/@lichess-org/stockfish-web/sf171-79*",
-                    dest: "assets/stockfish/",
-                },
+                // {
+                //     src: "node_modules/@lichess-org/stockfish-web/sf171-79*",
+                //     dest: "assets/stockfish/",
+                // },
                 {
                     src: "node_modules/@lichess-org/stockfish-web/fsf14*",
                     dest: "assets/stockfish/",
                 },
-                {
-                    src: "node_modules/@lichess-org/stockfish-web/sf16-7*",
-                    dest: "assets/stockfish/",
-                },
+                // {
+                //     src: "node_modules/@lichess-org/stockfish-web/sf16-7*",
+                //     dest: "assets/stockfish/",
+                // },
                 {
                     src: "node_modules/chessground/assets/*.css",
                     dest: "assets/chessground/",

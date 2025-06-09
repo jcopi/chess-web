@@ -32,23 +32,23 @@ const sharedWasmMemory = (required: number, maximum = 32767): WebAssembly.Memory
 };
 
 export enum Engine {
-    Stockfish171_79 = "@lichess-org/stockfish-web/sf171-79.js",
+    //Stockfish171_79 = "@lichess-org/stockfish-web/sf171-79.js",
     FairyStockfish14 = "@lichess-org/stockfish-web/fsf14.js",
-    Stockfish16_7 = "@lichess-org/stockfish-web/sf16-7.js",
+    //Stockfish16_7 = "@lichess-org/stockfish-web/sf16-7.js",
 }
 
 async function importEngine(e: Engine): Promise<any> {
     switch (e) {
-        case Engine.Stockfish171_79:
-            return import("@lichess-org/stockfish-web/sf171-79.js");
+        // case Engine.Stockfish171_79:
+        //     return import("@lichess-org/stockfish-web/sf171-79.js");
         case Engine.FairyStockfish14:
             return import("@lichess-org/stockfish-web/fsf14.js");
-        case Engine.Stockfish16_7:
-            return import("@lichess-org/stockfish-web/sf16-7.js");
+        // case Engine.Stockfish16_7:
+        //     return import("@lichess-org/stockfish-web/sf16-7.js");
     }
 }
 
-export async function initializeEngine(e: Engine = Engine.Stockfish171_79): Promise<StockfishWeb> {
+export async function initializeEngine(e: Engine = Engine.FairyStockfish14): Promise<StockfishWeb> {
     return new Promise<StockfishWeb>((resolve, reject) => {
         importEngine(e)
             .then((makeModule: any) => {
