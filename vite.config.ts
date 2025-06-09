@@ -1,6 +1,5 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from "vite";
-import { splitVendorChunkPlugin } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 export default defineConfig({
@@ -14,13 +13,6 @@ export default defineConfig({
     },
     build: {
         sourcemap: true,
-        rollupOptions: {
-            external: [
-                "@lichess-org/stockfish-web/sf17-79.js",
-                "@lichess-org/stockfish-web/fsf14.js",
-                "@lichess-org/stockfish-web/sf16-7.js",
-            ],
-        },
     },
     server: {
         headers: {
@@ -29,24 +21,12 @@ export default defineConfig({
         },
     },
     plugins: [
-        splitVendorChunkPlugin(),
+        //splitVendorChunkPlugin(),
         viteStaticCopy({
             targets: [
-                // {
-                //     src: "node_modules/@lichess-org/stockfish-web/sf171-79*",
-                //     dest: "assets/stockfish/",
-                // },
                 {
-                    src: "node_modules/@lichess-org/stockfish-web/fsf14*",
+                    src: "node_modules/@lichess-org/stockfish-web/fsf14*.wasm",
                     dest: "assets/stockfish/",
-                },
-                // {
-                //     src: "node_modules/@lichess-org/stockfish-web/sf16-7*",
-                //     dest: "assets/stockfish/",
-                // },
-                {
-                    src: "node_modules/chessground/assets/*.css",
-                    dest: "assets/chessground/",
                 },
             ],
         }),
