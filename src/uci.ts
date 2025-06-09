@@ -353,7 +353,7 @@ export class UCI implements Player {
     }
 }
 
-class uci_option {
+export class uci_option {
     readonly name: string = "";
 
     constructor(name: string) {
@@ -361,10 +361,11 @@ class uci_option {
     }
 
     static parse(line: string): uci_option | null {
-        const opt_re = /^option name (?<name>.+?) type (?<type>string|check|spin|button) ?(?<remainder>.*)$/;
-        const string_re = /^default (?<default>.+)$/;
+        const opt_re = /^option name (?<name>.+?) type (?<type>string|check|spin|button|combo) ?(?<remainder>.*)$/;
+        const string_re = /^default (?<default>.*)$/;
         const spin_re = /^default (?<default>\d+) min (?<min>[-+.\d]+) max (?<max>[-+.\d]+)$/;
         const check_re = /^default (?<default>true|false)$/;
+        const combo_re = /^default (?<remainder>.+)$/;
         try {
             let match = opt_re.exec(line);
             if (match == null) return null;
@@ -396,6 +397,15 @@ class uci_option {
                     );
                 case "button":
                     return new uci_option_button(oname);
+                case "combo":
+                    match = combo_re.exec(remainder);
+                    if (match == null) return null;
+
+                    let options = match.groups!["remainder"].split(" var ");
+                    if (options.length < 2) return null;
+                    let default_option = options.shift();
+
+                    return new uci_option_combo(oname, default_option!, options);
                 default:
                     return null;
             }
@@ -404,7 +414,7 @@ class uci_option {
         }
     }
 }
-class uci_option_string extends uci_option {
+export class uci_option_string extends uci_option {
     readonly default: string = "";
 
     constructor(name: string, def: string) {
@@ -416,7 +426,26 @@ class uci_option_string extends uci_option {
         return `setoption name ${this.name} value ${value}`;
     }
 }
-class uci_option_spin extends uci_option {
+export class uci_option_combo extends uci_option {
+    readonly default: string = "";
+    readonly options: string[] = [];
+
+    constructor(name: string, def: string, options: string[]) {
+        super(name);
+        this.default = def;
+        this.options = options;
+    }
+
+    set_command(value: string): string {
+        if (this.options.indexOf(value) < 0) {
+            throw "invalid value";
+        }
+
+        return `setoption name ${this.name} value ${value}`;
+    }
+}
+
+export class uci_option_spin extends uci_option {
     readonly default: number = 1;
     readonly min: number = 1;
     readonly max: number = 1;
@@ -432,7 +461,7 @@ class uci_option_spin extends uci_option {
         return `setoption name ${this.name} value ${value}`;
     }
 }
-class uci_option_check extends uci_option {
+export class uci_option_check extends uci_option {
     readonly default: boolean = false;
 
     constructor(name: string, def: boolean) {
@@ -444,7 +473,7 @@ class uci_option_check extends uci_option {
         return `setoption name ${this.name} value ${value ? "true" : "false"}`;
     }
 }
-class uci_option_button extends uci_option {
+export class uci_option_button extends uci_option {
     set_command(): string {
         return `setoption name ${this.name}`;
     }
