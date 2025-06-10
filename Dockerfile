@@ -19,5 +19,5 @@ FROM scratch
 COPY --from=gobuild --chown=2000 /bin/main /bin/main
 USER 2000
 
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT [ "/bin/main" ]
