@@ -16,7 +16,8 @@ RUN go build -o /bin/main -tags netgo,osusergo -trimpath -buildvcs=false .
 
 FROM scratch
 
-COPY --from=gobuild /bin/main /bin/main
+COPY --from=gobuild --chown=2000 /bin/main /bin/main
+USER 2000
 
 EXPOSE 80
 ENTRYPOINT [ "/bin/main" ]
