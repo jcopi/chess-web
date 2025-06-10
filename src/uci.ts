@@ -56,7 +56,9 @@ export async function initializeEngine(e: Engine = Engine.FairyStockfish14): Pro
                     .default({
                         wasmMemory: sharedWasmMemory(2560),
                         onError: (msg: string) => reject(new Error(msg)),
-                        locateFile: (name: string) => `assets/stockfish/${name}`,
+                        locateFile: (name: string) => {
+                            return `assets/stockfish/${name}`;
+                        },
                     })
                     .then(async (sfweb: StockfishWeb) => {
                         sfweb;
