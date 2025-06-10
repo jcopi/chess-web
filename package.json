@@ -18,6 +18,7 @@
     "dependencies": {
         "@lichess-org/stockfish-web": "^0.0.13",
         "chessground": "^9.2.1",
-        "chessops": "^0.14.2"
+        "chessops": "^0.14.2",
+        "vite-plugin-csp-guard": "^2.1.1"
     }
 }
