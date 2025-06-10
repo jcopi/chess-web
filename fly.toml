@@ -5,7 +5,7 @@ primary_region = "den"
 strategy = "rolling"
 
 [http_service]
-internal_port = 80
+internal_port = 8080
 auto_stop_machines = "stop"
 auto_start_machines = true
 [http_service.concurrency]
