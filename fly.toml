@@ -1,0 +1,19 @@
+app = "chess-web"
+primary_region = "den"
+
+[deploy]
+strategy = "rolling"
+
+[http_service]
+internal_port = 80
+auto_stop_machines = "stop"
+auto_start_machines = true
+[http_service.concurrency]
+type = "requests"
+soft_limit = 200
+hard_limit = 300
+
+[[vm]]
+size = "shared-cpu-1x"
+memory = "1GB"
+cpus = 1
