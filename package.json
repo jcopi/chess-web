@@ -13,7 +13,7 @@
     "devDependencies": {
         "typescript": "~5.7.2",
         "vite": "^6.3.4",
-        "vitest": "^3.2.2"
+        "vitest": "^3.2.3"
     },
     "dependencies": {
         "@lichess-org/stockfish-web": "^0.0.13",
