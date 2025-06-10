@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -30,15 +30,10 @@ func Handlers(handlers ...http.Handler) http.Handler {
 }
 
 func headers(w http.ResponseWriter, r *http.Request) {
-	switch filepath.Ext(r.URL.Path) {
-	case ".wasm":
-		// Currently WASM files are not renamed with a hash as
-		// vite does with other files because the import path
-		// is dynamically created
-		w.Header().Set("Cache-Control", "max-age=86400")
-	case ".js", ".css", ".map", ".nnue", ".ttf":
+	switch {
+	case strings.HasPrefix(r.URL.Path, "/assets"):
 		// These files all contain a hash in their names so they can be cached infinitely
-		w.Header().Set("Cache-Control", "max-age=5184000, immutable")
+		w.Header().Set("Cache-Control", "max-age=10368000, immutable")
 	}
 	w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
 	w.Header().Set("Cross-Origin-Opener-Policy", "same-origin")

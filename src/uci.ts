@@ -57,7 +57,12 @@ export async function initializeEngine(e: Engine = Engine.FairyStockfish14): Pro
                         wasmMemory: sharedWasmMemory(2560),
                         onError: (msg: string) => reject(new Error(msg)),
                         locateFile: (name: string) => {
-                            return `assets/stockfish/${name}`;
+                            switch (name) {
+                                case "fsf14.wasm":
+                                    return new URL("../node_modules/@lichess-org/stockfish-web/fsf14.wasm", import.meta.url).href;
+                                default:
+                                    return `assets/stockfish/${name}`;
+                            }
                         },
                     })
                     .then(async (sfweb: StockfishWeb) => {
