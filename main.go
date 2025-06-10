@@ -77,5 +77,5 @@ func main() {
 		http.HandlerFunc(logging(logger)),
 	))
 
-	http.ListenAndServe(":http", mux)
+	http.ListenAndServe(":8080", mux)
 }
