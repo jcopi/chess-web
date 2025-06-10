@@ -3,4 +3,7 @@ FROM golang:1.24.4-alpine3.22@sha256:68932fa6d4d4059845c8f40ad7e654e626f3ebd3706
 COPY . /src
 WORKDIR /src
 
+# Required for the go test race detector
+ENV CGO_ENABLED=1
+
 RUN go test -covermode=atomic -race ./...
