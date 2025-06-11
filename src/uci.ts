@@ -104,6 +104,25 @@ export enum SkillLevel {
     Skill_Default = Skill_5,
 }
 
+export function is_skill(n: unknown): n is SkillLevel {
+    switch (n) {
+        case SkillLevel.Skill_0:
+        case SkillLevel.Skill_1:
+        case SkillLevel.Skill_2:
+        case SkillLevel.Skill_3:
+        case SkillLevel.Skill_4:
+        case SkillLevel.Skill_5:
+        case SkillLevel.Skill_6:
+        case SkillLevel.Skill_7:
+        case SkillLevel.Skill_8:
+        case SkillLevel.Skill_9:
+        case SkillLevel.Skill_10:
+            return true;
+        default:
+            return false;
+    }
+}
+
 export class UCI implements Player {
     sfio: StockfishWeb;
     state: EngineState = EngineState.uci_setup;

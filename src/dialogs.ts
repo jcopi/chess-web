@@ -5,12 +5,12 @@ import { Chessground } from "chessground";
 
 /**
  * Shows a modal dialog for configuring a new chess game.
- * 
+ *
  * Allows the user to select their color (white, black, or random) and the CPU difficulty level.
  * The dialog cannot be cancelled - the user must make selections and click "Start" to proceed.
- * 
+ *
  * @returns Promise that resolves to GameDetails containing the user's game configuration
- * 
+ *
  * @example
  * ```typescript
  * const gameConfig = await NewGameDialog();
@@ -103,14 +103,14 @@ export async function NewGameDialog(): Promise<GameDetails> {
 
 /**
  * Shows a modal dialog for pawn promotion piece selection.
- * 
+ *
  * When a pawn reaches the opposite end of the board, this dialog allows the user
  * to choose which piece to promote to (Queen, Rook, Bishop, or Knight).
  * The dialog cannot be cancelled - the user must select a piece to continue the game.
- * 
+ *
  * @param color - The color of the pawn being promoted ("white" or "black")
  * @returns Promise that resolves to the selected Piece with the chosen role
- * 
+ *
  * @example
  * ```typescript
  * const promotedPiece = await PromotionDialog("white");
@@ -177,14 +177,14 @@ export async function PromotionDialog(color: Color): Promise<Piece> {
 
 /**
  * Shows a modal dialog asking the user to confirm rolling back the game to a previous move.
- * 
+ *
  * Displays a preview of the board position at the target move and asks for confirmation.
  * The user can either confirm the rollback or cancel to continue the current game.
- * 
+ *
  * @param fen - The FEN string representing the board position to roll back to
  * @param moveDescription - Human-readable description of the move (e.g., "move 5 (Nf3)")
  * @returns Promise that resolves to true if user confirms rollback, false if cancelled
- * 
+ *
  * @example
  * ```typescript
  * const shouldRollback = await RollbackDialog("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1", "move 1 (e4)");
@@ -257,13 +257,13 @@ export async function RollbackDialog(fen: string, moveDescription: string): Prom
 
 /**
  * Shows a modal dialog displaying the final result of a completed chess game.
- * 
+ *
  * Analyzes the game result and displays an appropriate message (checkmate, stalemate, or draw).
  * Provides options to analyze the final board position or end the game and start a new one.
- * 
+ *
  * @param result - The GameResult object containing information about how the game ended
  * @returns Promise that resolves when the user dismisses the dialog
- * 
+ *
  * @example
  * ```typescript
  * const gameResult = {
@@ -277,7 +277,6 @@ export async function RollbackDialog(fen: string, moveDescription: string): Prom
 export async function GameOverDialog(result: GameResult): Promise<void> {
     return new Promise((resolve, _) => {
         let dialog = document.createElement("dialog");
-        dialog.classList.add("cover");
 
         let header = document.createElement("h1");
         header.innerText = "Game Over";
@@ -320,14 +319,14 @@ export async function GameOverDialog(result: GameResult): Promise<void> {
 
 /**
  * Shows a modal loading dialog while executing an asynchronous operation.
- * 
+ *
  * Displays a loading message and prevents user interaction until the operation completes.
  * The dialog cannot be cancelled and will only close when the load function calls done().
- * 
+ *
  * @param load - Function that performs the async operation, receives a done() callback to close the dialog
  * @param msg - Optional loading message to display (defaults to "Loading...")
  * @returns Promise that resolves when the loading operation completes
- * 
+ *
  * @example
  * ```typescript
  * await LoadingDialog(async (done) => {
@@ -361,7 +360,7 @@ export async function LoadingDialog(load: (done: () => any) => any, msg: string 
 
 /**
  * Creates a styled HTML button element for use in dialogs.
- * 
+ *
  * @param text - The text to display on the button
  * @param classes - Array of CSS class names to apply to the button
  * @param onclick - Click event handler function
@@ -377,7 +376,7 @@ function button(text: string, classes: string[], onclick: (this: GlobalEventHand
 
 /**
  * Creates a styled HTML fieldset element with legend for grouping form controls.
- * 
+ *
  * @param title - The legend/title text for the fieldset
  * @param classes - Array of CSS class names to apply to the fieldset
  * @param elements - Array of HTML elements to include in the fieldset
@@ -394,7 +393,7 @@ function fieldset(title: string, classes: string[], elements: HTMLElement[]): HT
 
 /**
  * Creates a styled HTML range input element (slider).
- * 
+ *
  * @param min - Minimum value for the range
  * @param max - Maximum value for the range
  * @param step - Step increment for the range
@@ -424,7 +423,7 @@ function range(
 
 /**
  * Creates a horizontal container div for inline form elements.
- * 
+ *
  * @param elements - Array of HTML elements to arrange horizontally
  * @returns HTMLDivElement with inlinefield styling
  */
@@ -437,7 +436,7 @@ function inlinefield(elements: HTMLElement[]): HTMLDivElement {
 
 /**
  * Creates a styled HTML label element.
- * 
+ *
  * @param text - The text content for the label
  * @returns Configured HTMLLabelElement
  */

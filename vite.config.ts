@@ -14,8 +14,12 @@ export default defineConfig({
     plugins: [
         csp({
             policy: {
-                "default-src": ["'self'"],
+                "default-src": ["'none'"],
                 "script-src": ["'self'", "'wasm-unsafe-eval'"],
+                "style-src": ["'self'"],
+                "font-src": ["'self'"],
+                "connect-src": ["'self'"],
+                "img-src": ["'self'", "data:"],
                 "frame-ancestors": ["'none'"],
             },
             build: {
