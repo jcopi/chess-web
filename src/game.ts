@@ -7,9 +7,11 @@ import {
     Chess,
     isNormal,
     makeSquare,
+    makeUci,
     Move,
     opposite,
     parseSquare,
+    parseUci,
     Position,
     SquareSet,
 } from "chessops";
@@ -17,8 +19,7 @@ import { chessgroundDests } from "chessops/compat";
 import { INITIAL_BOARD_FEN, makeFen, parseFen } from "chessops/fen";
 import { PromotionDialog, RollbackDialog } from "./dialogs";
 import { makeSan } from "chessops/san";
-import { SkillLevel, UCI } from "./uci";
-import { Chessground } from "chessground";
+import { is_skill, SkillLevel, UCI } from "./uci";
 
 export class ChessgroundPlayer implements Player {
     api: Api;
@@ -111,12 +112,20 @@ export interface hints {
     white: color_hint;
 }
 
+function is_hints(h: any): h is hints {
+    return "white" in h && is_color_hint(h.white) && "black" in h && is_color_hint(h.black);
+}
+
 /**
  * Visual hint settings for pieces of a specific color.
  */
 export interface color_hint {
     attacked: boolean;
     at_risk: boolean;
+}
+
+function is_color_hint(h: any): h is color_hint {
+    return "attacked" in h && typeof h.attacked == "boolean" && "at_risk" in h && typeof h.at_risk == "boolean";
 }
 
 export const DEFAULT_HINTS: hints = {
@@ -146,15 +155,55 @@ export enum GameMode {
     LOCAL_WHITE_LOCAL_BLACK,
 }
 
+function is_mode(n: any): n is GameMode {
+    switch (n) {
+        case GameMode.CPU_WHITE_LOCAL_BLACK:
+        case GameMode.LOCAL_WHITE_CPU_BLACK:
+        case GameMode.REMOTE_WHITE_LOCAL_BLACK:
+        case GameMode.LOCAL_WHITE_REMOTE_BLACK:
+        case GameMode.LOCAL_WHITE_LOCAL_BLACK:
+            return true;
+        default:
+            return false;
+    }
+}
+
 /**
  * Complete configuration for starting a new chess game.
  * Contains all necessary information to initialize players, board hints, and CPU difficulty.
  */
 export interface GameDetails {
+    id?: string;
     mode: GameMode;
     hints: hints;
     /** CPU difficulty level (only used when mode includes CPU player) */
-    cpu_skill?: SkillLevel;
+    cpu_skill: SkillLevel;
+    moves?: Move[];
+}
+
+interface serializable_details extends GameDetails {
+    id: string;
+    move_str: string;
+}
+
+export interface GamePreview {
+    id: string;
+    preview_fen: string;
+}
+
+function is_serializable(s: any): s is serializable_details {
+    return (
+        "mode" in s &&
+        is_mode(s.mode) &&
+        "cpu_skill" in s &&
+        is_skill(s.cpu_skill) &&
+        "hints" in s &&
+        is_hints(s.hints) &&
+        "move_str" in s &&
+        typeof s.move_str == "string" &&
+        "id" in s &&
+        typeof s.id == "string"
+    );
 }
 
 function requires_cpu(details: GameDetails): boolean {
@@ -163,7 +212,7 @@ function requires_cpu(details: GameDetails): boolean {
 
 /**
  * Core chess game controller that manages the game state, players, and UI interactions.
- * 
+ *
  * Handles move validation, game progression, move history, and integration with the
  * chessground board display and move list table. Supports rollback functionality
  * and distinguishes between active gameplay and post-game analysis modes.
@@ -173,6 +222,8 @@ export class Game {
     white_player: Player;
     black_player: Player;
     table: HTMLTableElement;
+
+    init_details: GameDetails;
 
     moves: Move[];
     fens: string[];
@@ -187,24 +238,29 @@ export class Game {
 
     // For managing move cancellation during rollback
     private state_changed: boolean = false;
-    
+
     // Track if the game is over
     private is_game_over: boolean = false;
 
     /**
      * Creates a new chess game instance.
-     * 
+     *
      * @param cg - Chessground API instance for board display
      * @param white - Player instance for white pieces
      * @param black - Player instance for black pieces
      * @param table - HTML table element for move list display
      */
-    constructor(cg: Api, white: Player, black: Player, table: HTMLTableElement) {
+    constructor(cg: Api, white: Player, black: Player, table: HTMLTableElement, details: GameDetails) {
         this.cg = cg;
 
         this.white_player = white;
         this.black_player = black;
         this.table = table;
+
+        this.init_details = details;
+        if (this.init_details.id === undefined) {
+            this.init_details.id = self.crypto.randomUUID();
+        }
 
         this.game = Chess.default();
         this.moves = [];
@@ -217,15 +273,15 @@ export class Game {
     }
 
     /**
-     * Registers a callback function to be called before each move is processed.
-     * 
+     * Registers a callback function to be called after each move is processed.
+     *
      * @param fn - Function to call with the game position and move details
      */
-    on_pre_move(fn: MoveHandler) {
+    on_move(fn: MoveHandler) {
         this.handlers.push(fn);
     }
 
-    private do_move(move: Move): GameResult | undefined {
+    private do_move(move: Move, disable_animation: boolean = false): GameResult | undefined {
         if (!this.game.isLegal(move)) {
             throw `${makeSan(this.game, move)} is an illegal move, aborting game`;
         }
@@ -240,15 +296,18 @@ export class Game {
         let fen = makeFen(this.game.toSetup());
         this.fens.push(fen);
 
+        this.auto_save();
+
         // Add move to the move list table
         this.append_move_to_table_with_san(current_turn, san, current_fullmoves);
 
         this.handlers.forEach((fn) => fn(this.game, move));
 
-        this.set_cg_state(fen, this.game, false, true);
+        this.set_cg_state(fen, this.game, false, true && !disable_animation);
 
         if (this.game.isEnd()) {
             this.is_game_over = true;
+            this.delete_save();
             this.set_cg_state(fen, this.game, true, false);
             return {
                 Stalemate: this.game.isStalemate(),
@@ -321,11 +380,11 @@ export class Game {
 
     /**
      * Starts the main game loop, alternating between players until the game ends.
-     * 
+     *
      * Continuously requests moves from the current player, validates and applies them,
      * updates the board display, and checks for game end conditions. Handles move
      * cancellation during rollbacks and other state changes.
-     * 
+     *
      * @returns Promise that resolves to the final GameResult when the game ends
      * @throws Error if an illegal move is attempted or other game errors occur
      */
@@ -361,11 +420,19 @@ export class Game {
 
     /**
      * Updates the visual hint configuration for the chess board.
-     * 
+     *
      * @param hints - New hint configuration specifying which squares to highlight
      */
     set_hints(hints: hints) {
         this.hints = hints;
+    }
+
+    set_moves(moves?: Move[]) {
+        if (moves === undefined) return;
+
+        moves.forEach((move) => {
+            this.do_move(move, true);
+        });
     }
 
     private set_cg_state(fenstr: string, game: Chess, view_only?: boolean, animation?: boolean) {
@@ -480,24 +547,51 @@ export class Game {
         this.set_move_in_row(row, turn, san, fullmoves);
     }
 
+    serialize_game(): string {
+        let details: serializable_details = {
+            id: this.init_details.id!,
+            mode: this.init_details.mode,
+            cpu_skill: this.init_details.cpu_skill,
+            hints: this.hints,
+            moves: undefined,
+            move_str: this.moves.map((move) => makeUci(move)).join(" "),
+        };
+
+        return JSON.stringify(details);
+    }
+
+    static deserialize_details(json: string): GameDetails {
+        let obj = JSON.parse(json);
+
+        if (!is_serializable(obj)) throw "invalid GameDetails json";
+
+        return {
+            id: obj.id,
+            mode: obj.mode,
+            hints: obj.hints,
+            cpu_skill: obj.cpu_skill,
+            moves: obj.move_str.split(" ").map((uci_move) => parseUci(uci_move)!),
+        };
+    }
+
     /**
      * Factory method to create a new Game instance from configuration details.
-     * 
+     *
      * Sets up the chessground board, initializes the appropriate player types based on
      * the game mode, configures the UCI engine if needed, and returns a ready-to-play Game.
-     * 
+     *
      * @param details - Game configuration including mode, hints, and CPU skill level
      * @param uci - UCI engine instance for computer player moves
      * @param table - HTML table element for move list display
      * @returns Promise that resolves to a configured Game instance
      * @throws Error if remote player modes are requested (not implemented)
      */
-    static async from_details(details: GameDetails, uci: UCI, table: HTMLTableElement): Promise<Game> {
+    static async from_details(details: GameDetails, uci: UCI, cgapi: Api, table: HTMLTableElement): Promise<Game> {
         // If the game mode requires the CPU load
         let white: Player;
         let black: Player;
 
-        let cgapi = Chessground(document.getElementById("board")!, {
+        cgapi.set({
             fen: INITIAL_BOARD_FEN,
             coordinatesOnSquares: true,
             coordinates: true,
@@ -529,20 +623,55 @@ export class Game {
             await uci.start_game(5000);
         }
 
-        let game = new Game(cgapi, white, black, table);
+        let game = new Game(cgapi, white, black, table, details);
         game.set_hints(details.hints);
+        game.set_moves(details.moves);
 
         return game;
     }
 
+    private auto_save() {
+        localStorage.setItem(`games.${this.init_details.id!}`, this.serialize_game());
+    }
+
+    private delete_save() {
+        localStorage.removeItem(`games.${this.init_details.id!}`);
+    }
+
+    static async from_save(id: string, uci: UCI, cgapi: Api, table: HTMLTableElement): Promise<Game> {
+        let str = localStorage.getItem(`games.${id}`);
+        let details = Game.deserialize_details(str!);
+
+        return Game.from_details(details, uci, cgapi, table);
+    }
+
+    static list_saved_games(): GameDetails[] {
+        let out: GameDetails[] = [];
+        for (let i = 0; i <= localStorage.length; i++) {
+            let k = localStorage.key(i);
+            if (!k?.startsWith("games.")) continue;
+            let str = localStorage.getItem(k);
+            if (str === null || str.length == 0) continue;
+
+            try {
+                let parsed = Game.deserialize_details(str);
+                out.push(parsed);
+            } catch {
+                continue;
+            }
+        }
+
+        return out;
+    }
+
     /**
      * Rolls back the game state to a specific move index.
-     * 
+     *
      * Cancels any pending moves, truncates the move history, reconstructs the game
      * state from the target FEN position, updates the board display, and modifies
      * the move table to reflect the new state. After rollback, the game can continue
      * from the new position.
-     * 
+     *
      * @param moveIndex - The 0-based index in the moves array to rollback to
      * @throws Error if moveIndex is out of bounds or FEN parsing fails
      */

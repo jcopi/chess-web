@@ -35,7 +35,7 @@ func headers(w http.ResponseWriter, r *http.Request) {
 		// These files all contain a hash in their names so they can be cached infinitely
 		w.Header().Set("Cache-Control", "max-age=10368000, immutable")
 	}
-	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; frame-ancestors 'none';")
+	w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; img-src 'self' data:; style-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none';")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("X-Frame-Options", "DENY")
 	w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
