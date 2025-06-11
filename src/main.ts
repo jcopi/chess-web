@@ -41,4 +41,6 @@ let game = await Game.from_details(details, uci!, cgapi, moveTable);
 
 let result = await game.play();
 // Slight hack, show the board for a short time before creating the game over dialog
-await GameOverDialog(result);
+setTimeout(async () => {
+    await GameOverDialog(result);
+}, 3000);
