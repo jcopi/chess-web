@@ -135,6 +135,15 @@ button.green:hover {
     color: var(--background-main);
 }
 
+button.red {
+    color: var(--foreground-red);
+    border-color: var(--foreground-red);
+}
+button.red:hover {
+    background-color: var(--foreground-red);
+    color: var(--background-main);
+}
+
 button.rainbow {
     border-image: var(--rainbow-gradient) 2 2 2 2;
     background-clip: text;
@@ -244,6 +253,11 @@ label {
     flex: 0 0 auto;
     text-transform: uppercase;
     font-weight: 600;
+}
+
+label.inverted {
+    background-color: var(--foreground-main);
+    color: var(--background-main);
 }
 
 h3 {
