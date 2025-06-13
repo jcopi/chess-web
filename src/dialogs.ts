@@ -1,5 +1,5 @@
 import { Color, Piece, Role } from "chessops";
-import { SkillLevel } from "./uci";
+import { skill_display, SkillLevel } from "./uci";
 import { GameMode, GameDetails, GameResult, DEFAULT_HINTS } from "./game";
 import { Chessground } from "chessground";
 
@@ -69,6 +69,10 @@ export async function NewGameDialog(): Promise<GameDetails> {
         let footer = document.createElement("footer");
         footer.append(start);
 
+        let display = label(skill_display(SkillLevel.Skill_Default), ["inverted", "textcenter"]);
+        // Some element specific styling
+        display.style.width = "14px";
+
         let strength: HTMLInputElement;
         strength = range(
             SkillLevel.Skill_Min,
@@ -78,9 +82,10 @@ export async function NewGameDialog(): Promise<GameDetails> {
             [],
             () => {
                 details.cpu_skill = Number(strength.value) as SkillLevel;
+                display.innerText = skill_display(details.cpu_skill);
             },
         );
-        let inline = inlinefield([label("low"), strength, label("high")]);
+        let inline = inlinefield([label("low", []), strength, label("high", []), display]);
 
         dialog.append(header, fieldset("Player Color", [], btns), fieldset("Computer Strength", [], [inline]), footer);
 
@@ -440,8 +445,9 @@ function inlinefield(elements: HTMLElement[]): HTMLDivElement {
  * @param text - The text content for the label
  * @returns Configured HTMLLabelElement
  */
-function label(text: string) {
+function label(text: string, classes: string[]) {
     let lbl = document.createElement("label");
     lbl.innerText = text;
+    lbl.classList.add(...classes);
     return lbl;
 }

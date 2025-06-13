@@ -74,6 +74,7 @@ export async function initializeEngine(e: Engine = Engine.FairyStockfish14): Pro
                             if (nnue == prev) {
                                 break;
                             }
+                            prev = nnue;
                             let resp = await fetch(`assets/stockfish/${nnue}`);
                             let buf = await resp.arrayBuffer();
                             sfweb.setNnueBuffer(new Uint8Array(buf));
@@ -102,6 +103,10 @@ export enum SkillLevel {
     Skill_Min = Skill_0,
     Skill_Max = Skill_10,
     Skill_Default = Skill_5,
+}
+
+export function skill_display(s: SkillLevel): string {
+    return (10 * s).toFixed(0);
 }
 
 export function is_skill(n: unknown): n is SkillLevel {
