@@ -1,4 +1,4 @@
-FROM node:24.4.1-alpine3.21@sha256:3eb2e1adfcf3945867eb4d763cfa4cb3a0a2560d70de10481d95453488854786 AS nodebuild
+FROM node:24.6.0-alpine3.21@sha256:c9e2326c7bf56f4caf665d80a34cf29632f67ea281a2783d3a2b09fd3fe5b6bc AS nodebuild
 
 COPY . /src
 WORKDIR /src
