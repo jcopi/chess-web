@@ -1,4 +1,4 @@
-FROM node:24.9.0-alpine3.21@sha256:ffda5f5d47657a0fadca1a3ca2042214a7dcb928ffbdc15d1933fcef2eff2be2 AS nodebuild
+FROM node:24.10.0-alpine3.21@sha256:24085db06725487642885c4d4f7f156aeac0dc4b881b10dabb38cb8d5e142577 AS nodebuild
 
 COPY . /src
 WORKDIR /src
@@ -6,7 +6,7 @@ WORKDIR /src
 RUN npm ci
 RUN npx vite build
 
-FROM golang:1.25.1-alpine3.22@sha256:b6ed3fd0452c0e9bcdef5597f29cc1418f61672e9d3a2f55bf02e7222c014abd AS gobuild
+FROM golang:1.25.2-alpine3.22@sha256:06cdd34bd531b810650e47762c01e025eb9b1c7eadd191553b91c9f2d549fae8 AS gobuild
 
 COPY --from=nodebuild /src /src
 WORKDIR /src
