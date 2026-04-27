@@ -11,14 +11,14 @@
         "test:run": "vitest run"
     },
     "devDependencies": {
-        "typescript": "~5.9.3",
-        "vite": "^7.1.9",
-        "vitest": "^3.2.4"
+        "typescript": "~6.0.3",
+        "vite": "^8.0.10",
+        "vitest": "^4.1.5"
     },
     "dependencies": {
-        "@lichess-org/stockfish-web": "^0.0.14",
+        "@lichess-org/stockfish-web": "^0.3.0",
         "chessground": "^9.2.1",
         "chessops": "^0.15.0",
-        "vite-plugin-csp-guard": "^3.0.0"
+        "vite-plugin-csp-guard": "^4.0.1"
     }
 }
